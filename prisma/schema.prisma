@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// create schema for matching tables in database
+model userTB {
+  userId      Int  @id @default(autoincrement())
+  userFullName   String @db.VarChar(100)
+  userName    String @db.VarChar(50)
+  userPassword  String @db.VarChar(50)
+  userImage String @db.VarChar(100)
+}
+
+model festTB {
+  festId     Int  @id @default(autoincrement())
+  festName   String @db.VarChar(150)
+  festDetail String 
+  festStage  String 
+  festNumDay Int
+  festCost   Float
+  userId     Int
+  festImage  String @db.VarChar(150)
+}
