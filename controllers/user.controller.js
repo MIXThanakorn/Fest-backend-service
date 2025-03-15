@@ -3,55 +3,57 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-//create a prisma client
+//? สร้างตัวแปรอ้างอิงสำหรับ prisma เพื่อเอาไปใช้
 const prisma = new PrismaClient();
 
-// การอัพโหลดไฟล์
+//? อัปโหลดไฟล์-----------------------------
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "images/users");
-    } ,
-    filename: (req, file, cb) => {
-        cb(null, 'user_'+ Math.floor(Math.random()* Date.now()) + path.extname(file.originalname));
-    }
+  destination: (req, file, cb) => {
+    cb(null, "images/users");
+  },
+  filename: (req, file, cb) => {
+    cb(null, 'user_' + Math.floor(Math.random() * Date.now()) + path.extname(file.originalname));
+  }
 })
-
 exports.uploadUser = multer({
-     storage: storage,
-     limits: {
-         fileSize: 1000000
-     },
-     fileFilter: (req, file, cb) => {
-         const fileTypes = /jpeg|jpg|png/;
-         const mimeType = fileTypes.test(file.mimetype);
-         const extname = fileTypes.test(path.extname(file.originalname));
-         if(mimeType && extname) {
-             return cb(null, true);
-         }
-         cb("Error: Images Only");
-     }
-}).single("userImage");
-
-//--------------------------------------------------------------------
-//เอาข้อมูลที่ส่งมาจาก Frontend มาลงใน DB
-//--------------------------------------------------------------------
-
-exports.createUser = async (req, res) => {
-    try {
-        const result = await prisma.userTB.create({
-           data:{
-                userFullName: req.body.userFullName,
-                userName: req.body.userName,
-                userPassword:  req.body.userPassword,
-                userImage: req.file ? request.file.path.replace('images\\users\\', ' ') : '',
-           }
-        });
-            res.status(201).json({
-            message: 'OK',
-            info: result
-        })
-    } catch (error) {
-        res.status(500).json({ message: `errorfound: ${error}` });
-        console.log(`error: ${error}`);
+  storage: storage,
+  limits: {
+    fileSize: 1000000 //? file 1 mb
+  },
+  fileFilter: (req, file, cb) => {
+    const fileTypes = /jpeg|jpg|png/;
+    const mimeType = fileTypes.test(file.mimetype);
+    const extname = fileTypes.test(path.extname(file.originalname));
+    if (mimeType && extname) {
+      return cb(null, true);
     }
+    cb("Error: Images Only");
+  }
+}).single("userImage");//? ต้องตรงกับ column ในฐานข้อมูล
+//?-------------------------------------------------
+
+//? การเอาข้อมูลที่ส่งมาจาก Frontend เพิ่ม(Create/Insert) ลงตารางใน DB
+exports.createUser = async (req, res) => {
+  try {
+    const { userFullname, userName, userPassword } = req.body
+    const result = await prisma.userTB.create({
+      data: {
+        userFullname: userFullname,
+        userName: userName,
+        userPassword: userPassword,
+        userImage: req.file ? req.file.path.replace("images\\users\\", '') : "",
+      }
+    })
+
+    res.status(201).json({
+      message: "เพิ่มข้อมูลสําเร็จ",
+      data: result
+    })
+  } catch (err) {
+    res.status(500).json({
+      message: `พบเจอปัญหาในการทำงาน: ${err}`
+    })
+    console.log('Error', err);
+  }
 }
+//?-------------------------------------------------

@@ -1,26 +1,24 @@
-const express = require('express');
-require('dotenv').config();
-const cors = require('cors');
-const usercontroller = require('./controllers/user.controller');
+const express = require("express");
+const cors = require("cors");
 const userRoute = require('./routes/user.route');
+const festRoute = require('./routes/fest.route');
 
-const app = express();//create app server
+const app = express();
+const PORT = process.env.PORT;
 
+require('dotenv').config();
+
+//? ใช้ middleware
 app.use(cors());
 app.use(express.json());
 app.use('/user', userRoute);
-
-
-const PORT = process.env.PORT;//port of server
+app.use('/fest',festRoute);
 
 
 app.get('/', (req, res) => {
-    res.json({
-        message: "hello world welcome to Thanakorn server"  
-});
-});
+    res.json({ message: "Hello, welcome to Thanakorn server!" })
+})
 
-//start server with PORT
 app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
-});
+    console.log(`Server is running on port ${PORT}`);
+})

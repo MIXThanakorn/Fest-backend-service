@@ -13,20 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// create schema for matching tables in database
+// create schema เพื่อแมปกับตารางใน DB ที่จะทำงานด้วย
 model userTB {
-  userId      Int  @id @default(autoincrement())
-  userFullName   String @db.VarChar(100)
-  userName    String @db.VarChar(50)
-  userPassword  String @db.VarChar(50)
-  userImage String @db.VarChar(100)
+  userId       Int    @id @default(autoincrement())
+  userFullname String @db.VarChar(100)
+  userName     String @db.VarChar(50)
+  userPassword String @db.VarChar(50)
+  userImage    String @db.VarChar(100)
 }
 
 model festTB {
-  festId     Int  @id @default(autoincrement())
+  festId     Int    @id @default(autoincrement())
   festName   String @db.VarChar(150)
-  festDetail String 
-  festStage  String 
+  festDetail String
+  festState  String
   festNumDay Int
   festCost   Float
   userId     Int
