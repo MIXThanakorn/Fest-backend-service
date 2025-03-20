@@ -32,7 +32,7 @@ exports.uploadUser = multer({
 }).single("userImage");//? ต้องตรงกับ column ในฐานข้อมูล
 //?-------------------------------------------------
 
-//? การเอาข้อมูลที่ส่งมาจาก Frontend เพิ่ม(Create/Insert) ลงตารางใน DB
+//? add data
 exports.createUser = async (req, res) => {
   try {
     const { userFullname, userName, userPassword } = req.body
@@ -56,4 +56,84 @@ exports.createUser = async (req, res) => {
     console.log('Error', err);
   }
 }
-//?-------------------------------------------------
+
+// validate data
+exports.checklogin = async (req, res) => {
+  try {
+    const result = await prisma.userTB.findFirst({
+      where: {
+        userName: req.params.userName,
+        userPassword: req.params.userPassword        
+      }
+    })
+
+    if (result) {
+      res.status(200).json({
+        message: "เข้าสู่ระบบสําเร็จ",
+        data: result
+      })
+    } else {
+      res.status(404).json({
+        message: "ไม่พบข้อมูล"
+      })
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: `พบเจอปัญหาในการทำงาน: ${err}`
+    })
+  }
+    }
+
+//update
+exports.updateUser = async (request, response) => {
+  try {
+    let result = {};
+    
+    if (request.file) {
+     
+      const userResult = await prisma.userTB.findFirst({
+        where: {
+          userId: parseInt(request.params.userId),
+        },
+      });
+      //เอาข้อมูลของ user ที่ได้มามาดูว่ามีรูปไหม ถ้ามีให้ลบรูปนั้นทิ้ง
+      if (userResult.userImage) {
+        fs.unlinkSync(path.join("images/users", userResult.userImage)); //ลบรูปทิ้ง
+      }
+      //แก้ไขข้อมูลในฐานข้อมูล
+      result = await prisma.userTB.update({
+        where: {
+          userId: parseInt(request.params.userId),
+        },
+        data: {
+          userFullname: request.body.userFullname,
+          userName: request.body.userName,
+          userPassword: request.body.userPassword,
+          userImage: request.file.path.replace("images\\users\\", ""),
+        },
+      });
+    } else {
+      //แก้ไขข้อมูลแบบไม่มีการแก้ไขรูป
+      result = await prisma.userTB.update({
+        where: {
+          userId: parseInt(request.params.userId),
+        },
+        data: {
+          userFullname: request.body.userFullname,
+          userName: request.body.userName,
+          userPassword: request.body.userPassword,
+        },
+      });
+    }
+    //-----
+    response.status(200).json({
+      message: "Ok",
+      info: result,
+    });
+  } catch (error) {
+    response.status(500).json({
+      message: `พบปัญหาในการทำงาน: ${error}`,
+    });
+    console.log(`Error: ${error}`);
+  }
+};
