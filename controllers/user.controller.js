@@ -137,3 +137,22 @@ exports.updateUser = async (request, response) => {
     console.log(`Error: ${error}`);
   }
 };
+
+exports.deleteUser = async (req,res) => {
+  try {
+    const result = await prisma.userTB.delete({
+      where: {
+        userId: parseInt(req.params.userId),
+      },
+    });
+    res.status(200).json({
+      message: "ลบข้อมูลสําเร็จ",
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: `พบเจอปัญหาในการทำงาน: ${err}`,
+    });
+    console.log('Error', err);
+  }
+};

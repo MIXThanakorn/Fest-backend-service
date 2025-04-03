@@ -9,4 +9,6 @@ route.get('/:userName/:userPassword', usercontroller.checklogin);
 
 route.put('/:userId',usercontroller.uploadUser, usercontroller.updateUser);
 
+route.delete('/:userId',usercontroller.deleteUser);
+
 module.exports = route
