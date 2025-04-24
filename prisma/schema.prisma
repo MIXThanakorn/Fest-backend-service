@@ -25,10 +25,10 @@ model userTB {
 model festTB {
   festId     Int    @id @default(autoincrement())
   festName   String @db.VarChar(150)
-  festDetail String
-  festState  String
+  festDetail String @db.VarChar(191)
+  festState  String @db.VarChar(191)
   festNumDay Int
-  festCost   Float
+  festCost   Float @db.Double
   userId     Int
   festImage  String @db.VarChar(150)
 }

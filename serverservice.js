@@ -13,6 +13,8 @@ app.use(cors());
 app.use(express.json());
 app.use('/user', userRoute);
 app.use('/fest',festRoute);
+app.use('/images/users',express.static("images/users"))
+app.use('/images/fests',express.static("images/fests"))
 
 
 app.get('/', (req, res) => {

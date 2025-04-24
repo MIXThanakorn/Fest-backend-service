@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 exports.uploadUser = multer({
   storage: storage,
   limits: {
-    fileSize: 1000000 //? file 1 mb
+    fileSize: 100000000 //? file 1 mb
   },
   fileFilter: (req, file, cb) => {
     const fileTypes = /jpeg|jpg|png/;
@@ -70,7 +70,7 @@ exports.checklogin = async (req, res) => {
     if (result) {
       res.status(200).json({
         message: "เข้าสู่ระบบสําเร็จ",
-        data: result
+        info: result
       })
     } else {
       res.status(404).json({
